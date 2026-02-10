@@ -108,5 +108,30 @@ class AIEngine {
         
         return ['score' => $score, 'risk' => $risk, 'insight' => $insight];
     }
+    // 6. Basic AI Chat Response (Rule-based)
+    public function getInformation($query) {
+        $query = strtolower($query);
+        
+        if (strpos($query, 'fever') !== false) {
+            return "For fever, stay hydrated, rest, and monitor your temperature. If it exceeds 102°F (39°C), consult a doctor.";
+        }
+        if (strpos($query, 'headache') !== false) {
+            return "Headaches can be caused by dehydration, stress, or lack of sleep. Try drinking water and resting in a quiet room.";
+        }
+        if (strpos($query, 'diet') !== false || strpos($query, 'food') !== false) {
+            return "A balanced diet should include fruits, vegetables, whole grains, and lean proteins. Avoid excessive sugar and processed foods.";
+        }
+        if (strpos($query, 'exercise') !== false) {
+            return "Aim for at least 30 minutes of moderate exercise like walking or cycling daily to maintain good health.";
+        }
+        if (strpos($query, 'diabetes') !== false || strpos($query, 'sugar') !== false) {
+            return "Manage diabetes by monitoring blood sugar, eating low-GI foods, and taking prescribed medication regularly.";
+        }
+        if (strpos($query, 'blood pressure') !== false || strpos($query, 'bp') !== false) {
+            return "To manage BP, reduce salt intake, manage stress, and avoid alcohol/smoking. Regular monitoring is key.";
+        }
+        
+        return "I'm an AI assistant. I can help with general health tips, but for specific medical advice, please consult your doctor.";
+    }
 }
 ?>

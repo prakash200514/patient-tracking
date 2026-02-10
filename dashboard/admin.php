@@ -37,8 +37,8 @@ $stats['high_risk'] = $conn->query("SELECT COUNT(DISTINCT patient_id) FROM ai_an
     <div class="container dashboard-grid">
         <aside class="sidebar">
             <ul>
-                <li><a href="#" class="active">Dashboard</a></li>
-                <li><a href="#">Manage Users</a></li>
+                <li><a href="admin.php" class="active">Dashboard</a></li>
+                <li><a href="admin_users.php">Manage Users</a></li>
                 <li><a href="#">Settings</a></li>
             </ul>
         </aside>

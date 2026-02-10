@@ -21,8 +21,16 @@ class Auth {
         $stmt->bindParam(":password", $password_hash);
         $stmt->bindParam(":role", $role);
 
-        if($stmt->execute()) {
-            return $this->conn->lastInsertId();
+        try {
+            if($stmt->execute()) {
+                return $this->conn->lastInsertId();
+            }
+        } catch(PDOException $e) {
+            // Check for duplicate entry (Error 23000)
+            if ($e->getCode() == 23000) {
+                return false;
+            }
+            throw $e; // Re-throw other errors
         }
         return false;
     }
@@ -59,7 +67,7 @@ class Auth {
     public function logout() {
         if(session_status() === PHP_SESSION_NONE) session_start();
         session_destroy();
-        header("Location: ../login.php"); // Adjust path as needed
+        header("Location: login.php"); // Redirect to login page
         exit;
     }
 }

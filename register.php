@@ -23,12 +23,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $db = new Database();
             $conn = $db->getConnection();
             
+            $gender = sanitizeInput($_POST['gender']);
+            $age = sanitizeInput($_POST['age']); // Using DOB in DB, so we might need DOB or calculate it. Let's ask for DOB.
+            $dob = sanitizeInput($_POST['dob']);
+            $contact = sanitizeInput($_POST['contact']);
+            $address = sanitizeInput($_POST['address']);
+
             if($role == 'patient') {
-                $stmt = $conn->prepare("INSERT INTO patients (user_id) VALUES (:user_id)");
-                $stmt->execute([':user_id' => $user_id]);
+                $stmt = $conn->prepare("INSERT INTO patients (user_id, gender, date_of_birth, contact_number, address) VALUES (:user_id, :gender, :dob, :contact, :address)");
+                $stmt->execute([
+                    ':user_id' => $user_id,
+                    ':gender' => $gender,
+                    ':dob' => $dob,
+                    ':contact' => $contact,
+                    ':address' => $address
+                ]);
             } elseif($role == 'doctor') {
-                $stmt = $conn->prepare("INSERT INTO doctors (user_id) VALUES (:user_id)");
-                $stmt->execute([':user_id' => $user_id]);
+                $stmt = $conn->prepare("INSERT INTO doctors (user_id, contact_number) VALUES (:user_id, :contact)");
+                $stmt->execute([
+                    ':user_id' => $user_id,
+                    ':contact' => $contact
+                ]);
             }
 
             $success = "Registration successful! You can now login.";
@@ -77,12 +92,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="password" id="password" name="password" class="form-control" required>
                 </div>
                 <div class="form-group">
+                    <label for="contact">Contact Number</label>
+                    <input type="text" id="contact" name="contact" class="form-control" placeholder="Mobile Number" required>
+                </div>
+
+                <div class="form-group">
                     <label for="role">I am a:</label>
-                    <select id="role" name="role" class="form-control">
+                    <select id="role" name="role" class="form-control" onchange="toggleFields()">
                         <option value="patient">Patient</option>
                         <option value="doctor">Doctor</option>
                     </select>
                 </div>
+
+                <div id="patient-fields">
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" class="form-control">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" name="dob" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Location / Address</label>
+                        <textarea id="address" name="address" class="form-control" rows="2" placeholder="e.g. New York, Downtown"></textarea>
+                    </div>
+                </div>
+
+                <script>
+                    function toggleFields() {
+                        const role = document.getElementById('role').value;
+                        const patientFields = document.getElementById('patient-fields');
+                        if (role === 'patient') {
+                            patientFields.style.display = 'block';
+                        } else {
+                            patientFields.style.display = 'none';
+                        }
+                    }
+                </script>
                 <button type="submit" class="btn-primary">Register</button>
             </form>
             <div class="auth-footer">
